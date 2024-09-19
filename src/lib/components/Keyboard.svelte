@@ -8,6 +8,7 @@
     userUUID,
   } from "$lib/stores.js";
   import { turnOnToast } from "$lib/toast-controller.js";
+  import { colorNametoRGBA } from "$lib/colors.js";
 
   const letterRegex = /^[A-ZĄĆĘŁŃÓŚŹŻąćęłńóśźż]$/;
 
@@ -19,6 +20,20 @@
     ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "DEL"],
     ["Ą", "Ć", "Ę", "Ł", "Ń", "Ó", "Ś", "Ź", "Ż"],
   ];
+
+  function findColorOfLetter(letter, $board) {
+    const row = $board.findIndex((row) =>
+      row.some((obj) => obj.value === letter)
+    );
+
+    if (row < 0) {
+      return "";
+    }
+
+    const column = $board[row].findIndex((obj) => obj.value === letter);
+
+    return $board[row][column].color;
+  }
 
   function handleKey(event) {
     const key = event.key.toUpperCase();
@@ -41,7 +56,7 @@
     if (letterRegex.test(letter)) {
       addLetter(letter);
     } else if (letter === "ENTER") {
-      checkWord(letter);
+      checkWord();
     } else if (
       letter === "DEL" ||
       letter === "DELETE" ||
@@ -81,7 +96,7 @@
     return await response.json();
   }
 
-  async function checkWord(letter) {
+  async function checkWord() {
     if ($currentCol < 5) {
       return;
     }
@@ -170,7 +185,10 @@
       {#each row as letter}
         <button
           type="button"
-          class="btn btn-success m-sm-1 p-2 p-md-2 p-lg-3 p-xl-4"
+          class="btn btn-outline-secondary m-sm-1 p-2 p-md-2 p-lg-3 p-xl-4"
+          style="background-color: {colorNametoRGBA
+            .chooseColor(findColorOfLetter(letter, $board))
+            .getRGBA(0.2)};"
           on:click={() => enterLetter(letter)}
         >
           {letter}
