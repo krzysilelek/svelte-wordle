@@ -1,34 +1,22 @@
-import { readFile, writeFile } from 'fs/promises';
+import Database  from 'better-sqlite3';
 
-const filepath = 'src/lib/data/db.json';
-let db;
+const database = new Database(':memory:');
 
-export async function reloadDB(){
-    const fileContent = await readFile(filepath, 'utf-8');
-    try{    
-        db = JSON.parse(fileContent);
-    }catch{
-        db = JSON.parse('[]');
-    }
+database.exec(`
+  CREATE TABLE data(
+    UUID TEXT,
+    word TEXT
+  )
+`);
+
+const insert = database.prepare('INSERT INTO data (UUID, word) VALUES (?, ?)');
+const query = database.prepare('SELECT word FROM data WHERE UUID = ?');
+
+
+export function saveUser(userUUID, word){
+    insert.run(userUUID, word);
 }
 
-export async function saveUser(userUUID, word){
-    await reloadDB();
-    const newUser = {
-        UUID: userUUID,
-        word: word
-    }
-    db.push(newUser);
-    await writeFile(filepath, JSON.stringify(db));
-}
-
-export async function readUserWord(UUID){
-    await reloadDB();
-    const user = db.find(user => user.UUID == UUID);
-
-    if(!user){
-        return '';
-    }
-
-    return user.word;
+export function readUserWord(UUID){
+    return query.get(UUID)?.word;
 }

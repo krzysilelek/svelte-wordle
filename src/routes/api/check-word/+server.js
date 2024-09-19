@@ -4,7 +4,7 @@ import { readUserWord } from '$lib/db-connection.js';
 
 export async function POST({request}) {
     const { UUID, guessWord } = await request.json();
-    const correctWord = await readUserWord(UUID);
+    const correctWord = readUserWord(UUID);
     const colors = new Array(5);
 
     for(let i = 0; i<correctWord.length; i++){
