@@ -395,8 +395,6 @@ bęcki
 biada
 biaks
 biały
-biały
-biały
 bibka
 bibop
 bicek
@@ -6729,6 +6727,5 @@ zżyty
 żywić
 żywik
 żywny
-żywot
 żywot
 żyzny
